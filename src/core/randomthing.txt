@@ -1,0 +1,20 @@
+LOGIN:
+if has acc -> open own data folder: (username_time stamp_type)
+else no acc -> create new data folder contains 3 folder heatmap/csv/model
+
+own data folder: {username}_{userid}
+model: {username}_{model}.pkl
+sessions: {username}_{time_stamp}_{session}.csv
+heatmap: {username}_{time_stamp}_{heatmap}.png
+config.json (chua du lieu co dinh: ngay tao folder)
+
+
+LOGIN:
+validate_login
+user = find_user(name)
+if user:
+    load_user()
+else:
+    create_new_user()
+
+
