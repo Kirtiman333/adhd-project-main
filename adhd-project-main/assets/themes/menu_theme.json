@@ -1,0 +1,32 @@
+{
+    "defaults": {
+        "colours": {
+            "main_bg": "#0B0915",
+            "dark_bg": "#161122",
+            "section_bg": "#1E1633"
+        }
+    },
+    "window": {
+        "colours": {
+            "bg_colour": "#0B0915"
+        }
+    },
+    "menu": {
+        "colours": {
+            "title_text": "#BB9AF7",
+            "overlay": "#161122E6"
+        }
+    },
+    "button": {
+        "colours": {
+            "normal_bg": "#2E3440",
+            "hovered_bg": "#4C566A",
+            "active_bg": "#5E81AC",
+            "normal_text": "#ECEFF4"
+        },
+        "misc": {
+            "border_width": "1",
+            "shadow_width": "2"
+        }
+    }
+}
