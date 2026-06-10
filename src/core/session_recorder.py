@@ -4,6 +4,7 @@ import numpy as np
 import os
 from datetime import datetime
 from src.config import *
+from src.game_logic.scoring import AttentionScorer
 
 class SessionRecorder:
     def __init__(self, user):
@@ -33,8 +34,18 @@ class SessionRecorder:
         
         df = pd.DataFrame(self.current_data)
         df.to_csv(path, index=False)
-        self.current_data = [] 
+        self.current_data = []
         return path
+
+    def score_session(self, csv_path):
+        """Turn a saved session CSV into attention metrics (focus_score, etc.).
+
+        Returns a SessionMetrics, or None if there is nothing to score. Uses the
+        same attention engine as tools/attention_report.py.
+        """
+        if not csv_path or not os.path.exists(csv_path):
+            return None
+        return AttentionScorer(screen=(SCREEN_WIDTH, SCREEN_HEIGHT)).score_csv(csv_path)
 
     def generate_heatmap(self, background_img, csv_path, width=SCREEN_WIDTH, height=SCREEN_HEIGHT):
         if not os.path.exists(csv_path):

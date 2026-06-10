@@ -7,3 +7,4 @@ class GameState(Enum):
     SETTINGS = "Settings"
     CALIBRATE = "Calibrate"
     LOGIN = "Login"
+    STATS = "Stats"
