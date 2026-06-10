@@ -177,11 +177,15 @@ class GameManager:
 
     def start_calibration(self):
         print(f"[GameManager] switch to calibrate")
-        self.eye_tracker.create_model(self.current_user.model_path)
+        # A brand-new user has no eye tracker yet (no model) — create it before
+        # calibrating, otherwise self.eye_tracker is None here.
+        if self.eye_tracker is None:
+            self.setup_eye_tracker(self.current_user)
+        success = self.eye_tracker.create_model(self.current_user.model_path)
         self.game_state = GameState.MENU
         self.ui.switch_state(self.game_state)
         self.event_manager.emit("MODEL_STATUS_CHANGED", {
-            "has_model": True,
+            "has_model": bool(success),
             "model_path": str(self.current_user.model_path)
         })
 

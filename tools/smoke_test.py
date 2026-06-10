@@ -50,6 +50,28 @@ def check(name, fn):
 from src.core.game_manager import GameManager  # noqa: E402
 from src.core.game_state import GameState      # noqa: E402
 
+
+class _FakeEyeTracker:
+    """Stand-in so the calibration path can be exercised without the real
+    (interactive, webcam-driven) eyetrax calibration."""
+    def __init__(self, *a, **k):
+        self.has_model = False
+
+    def create_model(self, path):
+        self.has_model = True
+        return True
+
+    def load_model(self, path):
+        self.has_model = True
+        return True
+
+    def update(self, frame):
+        return None
+
+    def render(self, *a, **k):
+        pass
+
+
 state = {}
 
 
@@ -64,6 +86,18 @@ def login_creates_user():
     gm.event_manager.emit("LOGIN_REQUEST", {"username": "smoke", "password": "pw123"})
     assert gm.current_user is not None, "no user after login"
     assert gm.game_state == GameState.MENU, f"expected MENU, got {gm.game_state}"
+
+
+def calibration_does_not_crash():
+    # A brand-new user has no model, so eye_tracker is None until calibration.
+    # Calibration must create it rather than crash on None.create_model.
+    import src.core.game_manager as gmmod
+    gmmod.EyeTracker = _FakeEyeTracker          # avoid real interactive calibration
+    gm = state["gm"]
+    gm.eye_tracker = None                        # simulate new user (no model yet)
+    gm.event_manager.emit("START_CALIBRATION")
+    assert gm.eye_tracker is not None, "calibration left eye_tracker as None"
+    assert gm.game_state == GameState.MENU
 
 
 def relogin_correct_and_wrong_password():
@@ -137,6 +171,7 @@ print("  HEADLESS SMOKE TEST (SDL dummy driver, no webcam)")
 print("=" * 64)
 check("construct GameManager (pygame + pygame_gui + all scenes + engine)", construct)
 check("login creates a new user and switches to MENU", login_creates_user)
+check("calibration on a new user does not crash (eye_tracker None)", calibration_does_not_crash)
 check("re-login: wrong password rejected, correct password accepted", relogin_correct_and_wrong_password)
 check("empty username shows on-screen feedback (LOGIN_FAILED)", empty_username_feedback)
 check("Progress dashboard opens and returns (StatsScene)", show_stats_dashboard)
